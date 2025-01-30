@@ -225,7 +225,7 @@ const gameWin = function () {
         text:`YOUR SCORE IS : ${score}`,
         confirmButtonColor: "darkgreen",
         imageUrl: "./images/monkey-win.gif",
-        width: "30vw",
+        width: "60vw",
         color: "orangered",
         background: "repeating-linear-gradient(45deg,#B2C363,#B2C363 10px,#F0E68C 10px, #F0E68C 20px)",
         allowOutsideClick: false,
@@ -258,7 +258,7 @@ const gameOver = function () {
         title: "Game Over",
         confirmButtonText: "Play Again !",
         imageUrl: "./images/sad.gif",
-        width: '30vw',
+        width: '60vw',
         color: "orangered",
         background: "repeating-linear-gradient(45deg,#B2C363,#B2C363 10px,#F0E68C 10px, #F0E68C 20px)",
         allowOutsideClick: false,
@@ -367,3 +367,49 @@ gameContainer.append(xy);
 gameContainer.onmousemove = function (e) {
     xy.innerText = `${e.x}x${e.y}`
 }
+
+// Handle playing on mobile 
+let touchStartX = 0; // to track where the touch started for movement
+let touchEndX = 0;   // to track where the touch ended for movement
+let touchStartY = 0; // for shooting area touch detection
+
+// Handle touch move for moving the monkey
+document.addEventListener('touchstart', (event) => {
+    // Store the starting touch position
+    touchStartX = event.touches[0].clientX; 
+    touchStartY = event.touches[0].clientY; // for detecting shooting area
+}, { passive: true });
+
+document.addEventListener('touchmove', (event) => {
+    // Prevent default behavior to avoid screen scrolling
+    event.preventDefault();
+    
+    // Get the current touch position
+    touchEndX = event.touches[0].clientX;
+    
+    let currentPosition = monkey.offsetLeft;
+
+    // Move monkey based on touch movement
+    if (touchEndX < touchStartX && currentPosition > 20) { // swipe left
+        currentPosition -= 40;
+        monkey.style.left = currentPosition + 'px';
+    } else if (touchEndX > touchStartX && currentPosition < gameContainer.clientWidth - monkey.clientWidth - 20) { // swipe right
+        currentPosition += 40;
+        monkey.style.left = currentPosition + 'px';
+    }
+}, { passive: true });
+
+// Handle touch to shoot
+document.addEventListener('touchend', (event) => {
+    // Check if the touch ended in the shooting area (like bottom center of the screen)
+    const shootArea = gameContainer.clientHeight - 100; // adjust based on where you want to shoot from
+    if (event.changedTouches[0].clientY > shootArea && canShoot) {
+        shootStone(); // shoot the stone
+        canShoot = false;
+        shootIndicator.style.backgroundColor = "red"; // Not ready to shoot
+        setTimeout(() => {
+            canShoot = true;
+            shootIndicator.style.backgroundColor = "green"; // Ready to shoot
+        }, 1000);
+    }
+}, { passive: true });
