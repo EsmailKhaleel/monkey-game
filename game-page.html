@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monkey Game</title>
+    <link rel="icon" type="image/x-icon" href="./images/favicon.ico">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="style.css">
+    <script defer src="./js/game.js"></script>
+</head>
+<body>
+    <section id="timer">
+        <div id="username">UserName : <strong id="name"> UNKNOWN</strong></div>
+        <div class="stopwatchwrapper">
+            <div id="stopwatch">00:00</div>
+            <div id="time"><sub>of &nbsp; 2:00 Minutes</sub></div>
+        </div>
+        <div id="score">SCORE : 00</div>
+    </section>
+    <div class="gameContainer"></div>
+    <div id="shootIndicator"></div>
+    <button id="fullscreen-btn"><i class="fas fa-expand"></i></button>
+    <!-- Sounds Files -->
+    <audio src="sounds/game_theme.mp3" id="game_theme"></audio>
+    <audio src="sounds/game_over.wav" id="game_over"></audio>
+    <audio src="sounds/game_win.wav" id="game_win"></audio>
+    <audio src="sounds/bomb.wav" id="bomb"></audio>
+    <audio src="sounds/shot.wav" id="shotBomb"></audio>
+    <audio src="sounds/add_score.wav" id="add_score"></audio>
+    <audio src="sounds/golden.mp3" id="golden"></audio>
+</body>
+</html>
