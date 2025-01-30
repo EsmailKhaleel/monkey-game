@@ -1,14 +1,7 @@
 Monkey Game
 Welcome to the Monkey Game! 🎮🐒
 
-This is a simple game created using plain JavaScript, HTML, and CSS. In this game, you control a monkey that needs to collect bananas while avoiding obstacles. The game is designed to be fun and interactive with smooth controls and an engaging environment.
-
-Here's an example of what you can write in your README.md file for your Monkey Game project:
-
-Monkey Game
-Welcome to the Monkey Game! 🎮🐒
-
-This is a simple game created using plain JavaScript, HTML, and CSS. In this game, you control a monkey that needs to collect bananas while avoiding obstacles. The game is designed to be fun and interactive with smooth controls and an engaging environment.
+This is a simple game created using plain JavaScript, HTML, and CSS. In this game, you control a monkey that needs to collect bananas. The game is designed to be fun and interactive with smooth controls and an engaging environment.
 
 Features
 Interactive gameplay: Use your keyboard keys to control the monkey.
