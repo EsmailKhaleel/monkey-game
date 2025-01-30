@@ -5,6 +5,7 @@ const startPage = document.querySelector("div.startPage");
 const welcomeDiv = document.querySelector("div.welcomeDiv");
 const welcome = document.querySelector("#welcome");
 const startButton = document.querySelector("#startButton");
+const howToPlayButton = document.querySelector("#howtoplay");
 const gameIntro = document.getElementById('game_intro');
 const userLastScore = document.getElementById('lastscore');
 const user ={
@@ -45,4 +46,27 @@ playButton.onclick = function (event) {
 startButton.onclick = function () {
     gameIntro.pause();
     location.href = "game-page.html";
+}
+howToPlayButton.onclick = function(){
+    Swal.fire({
+        title: "How to Play! 🐵🎮",
+        html: `
+            <div style="text-align: center;">
+                <p><strong>🕹️ Movement</strong></p>
+                <p>⬅️ Move Left | ➡️ Move Right </p>
+                <p><strong>🎯 Shooting</strong></p>
+                <p>Press <strong>Space</strong> to shoot!</p>    
+            </div>
+        `,
+        width: '70vw',
+        color: "orangered",
+        background: "repeating-linear-gradient(45deg,#B2C363,#B2C363 10px,#F0E68C 10px, #F0E68C 20px)",
+        buttonsStyling: false,
+        customClass: {
+            confirmButton: 'playAgain',
+            title: 'swal-title',
+            popup: 'custom-popup',
+        }
+    });
+    
 }
