@@ -7,16 +7,31 @@ const sounds = {
     addScore : document.getElementById('add_score'),
     golden : document.getElementById('golden'),
 }
-const user ={
-    name:"",
-    score:"",
+const user = {
+    name: "",
+    score: "",
+    difficulty: ""
 }
+const difficultySettings = {
+    easy: {
+        fruitSpeed: 7000,    // slower fruit movement
+        spawnInterval: 7000  // longer time between fruit spawns
+    },
+    normal: {
+        fruitSpeed: 5000,    // default speed
+        spawnInterval: 5000  // default spawn interval
+    },
+    hard: {
+        fruitSpeed: 3000,    // faster fruit movement
+        spawnInterval: 3000  // shorter time between fruit spawns
+    }
+};
 const sources = ["banana.png", "bomb.gif", "golden.png"];
 const gameContainer = document.querySelector("div[class=gameContainer]");
 const stopWatch = document.getElementById('stopwatch');
 const scoreObject = document.getElementById('score');
 const shootIndicator = document.getElementById("shootIndicator");
-const userNameObject = document.getElementById('name');
+const userNameObject = document.getElementById('username');
 let canShoot = true;
 let imagesArray = [];
 let gameInterval, stopWatchInterval;
@@ -34,9 +49,16 @@ document.body.addEventListener('click', () => {
 const savedUser = JSON.parse(localStorage.getItem('user'));
 user.name = savedUser.name; 
 user.score = savedUser.score;
+const difficulty = savedUser.difficulty || 'normal';
+const gameSettings = difficultySettings[difficulty];
 
 // display username
 userNameObject.innerHTML = ` ${user.name}`;
+userNameObject.style = `text-overflow: ellipsis;
+    -webkit-line-clamp: 1;
+    display: -webkit-box;
+    -webkit-box-orient: horizontal;
+    overflow: hidden;`;
 
 // Create Monkey 
 function createMonkey() {
@@ -88,7 +110,7 @@ const moveFruitDown = function(fruitObject){
             gameOver();
             console.log('game over');
         }
-    }, 5000);
+    }, gameSettings.fruitSpeed);
 }
 function isMobile() {
     return window.innerWidth < 768;
@@ -281,22 +303,7 @@ const gameOver = function () {
         }
     });
 }
- Swal.fire({
-        title: "Game Over",
-        confirmButtonText: "Play Again !",
-        imageUrl: "./images/sad.gif",
-        width: '85vw',
-        color: "orangered",
-        background: "repeating-linear-gradient(45deg,rgb(211, 227, 137),rgb(76, 94, 5) 10px,rgb(91, 85, 33) 10px,rgb(147, 138, 57) 20px)",
-        allowOutsideClick: false,
-        buttonsStyling: false,
-        showCancelButton: true,
-        customClass: {
-            confirmButton: 'playAgain',
-            cancelButton: 'playAgain cancel',
-            title: 'swal-title ',
-        }
-    })
+
 // Reset Game
 const resetGame = function () {
     stopAllIntervals();
@@ -324,16 +331,16 @@ const startStopWatch = function () {
     stopWatchInterval = setInterval(function () {
         seconds++;
         if (seconds === 60) { minutes++; seconds = 0; }
-        if (minutes === 2) {
-            gameWin();
-        };
+        // if (minutes === 2) {
+        //     gameWin();
+        // };
         stopWatch.innerText = `${minutes < 10 ? '0' + minutes : minutes} : ${seconds < 10 ? '0' + seconds : seconds}`;
     }, 1000);
 };
 
 // Game Intervals
 const startGame = function () {
-    gameInterval = setInterval(() => createMovingDownObjects(sources), 5000);
+    gameInterval = setInterval(() => createMovingDownObjects(sources), gameSettings.spawnInterval);
     startStopWatch();
 };
 
@@ -362,14 +369,41 @@ window.onresize = function () {
 }
 // ******** Fullscreen Mode
 const fullscreenBtn = document.getElementById('fullscreen-btn');
+
+function openFullscreen(elem) {
+    if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+    } else if (elem.mozRequestFullScreen) { // Firefox
+        elem.mozRequestFullScreen();
+    } else if (elem.webkitRequestFullscreen) { // Chrome, Safari, Opera
+        elem.webkitRequestFullscreen();
+    } else if (elem.msRequestFullscreen) { // IE/Edge
+        elem.msRequestFullscreen();
+    }
+}
+
+function closeFullscreen() {
+    if (document.exitFullscreen) {
+        document.exitFullscreen();
+    } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+    } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+    } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+    }
+}
+
 fullscreenBtn.addEventListener('click', () => {
     const icon = fullscreenBtn.querySelector('i');
-    if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen();
+    const isFull = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement;
+
+    if (!isFull) {
+        openFullscreen(document.documentElement); // or gameContainer if you want only the game area
         icon.classList.remove('fa-expand');
         icon.classList.add('fa-compress');
     } else {
-        document.exitFullscreen();
+        closeFullscreen();
         icon.classList.remove('fa-compress');
         icon.classList.add('fa-expand');
     }
@@ -380,6 +414,7 @@ fullscreenBtn.addEventListener('click', () => {
         }
     });
 });
+
 // Display Mouse Position (For Debugging)
 let xy = document.createElement('span');
 gameContainer.append(xy);

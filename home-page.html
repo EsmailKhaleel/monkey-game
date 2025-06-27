@@ -14,11 +14,17 @@
 <body>
     <div class="centeredDiv startPage">
         <img src="images/logo.png" alt="" id="monkey-face"><br>
-        <input type="text" id="userName" placeholder="Enter Your Name"><span id="errorUserName">PLEASE ENTER YOUR
-            NAME!</span><br>
         <div class="actions">
-            <button id="howtoplay" class="playStartBtn">Guide</button>
-            <button id="playButton" class="playStartBtn">Play</button>
+            <input type="text" id="userName" placeholder="Enter Your Name"><span id="errorUserName">PLEASE ENTER YOUR
+                NAME!</span>
+            <select class="form-control" name="choose">
+                    <option disabled selected>Choose Game Mode</option>
+                    <option value="easy">easy</option>
+                    <option value="normal">normal</option>
+                    <option value="hard">hard</option>
+                </select>
+            <button id="howtoplay" class="playStartBtn">🐵 Guide</button>
+            <button id="playButton" class="playStartBtn">🙈 Start</button>
         </div>
     </div>
     <!-- Welcome The User -->
