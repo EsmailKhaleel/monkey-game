@@ -17,6 +17,12 @@ body {
     user-select: none;
     overflow: hidden;
 }
+*::before, *::after{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
 /* LOGO */
 #logo-page{
     width: 100%;
@@ -283,27 +289,6 @@ span#errorUserName {
     display: flex;
     gap: 10px;
 }
-.touch-zone {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 33.33%;
-  z-index: 999;
-}
-
-#left-touch-zone {
-  left: 0;
-}
-#shoot-touch-zone {
-  left: 33.33%;
-}
-#right-touch-zone {
-  left: 66.66%;
-}
-.touch-zone {
-  background-color: rgba(255, 255, 255, 0.02); 
-}
-
 
 /* Responsive */
 @media screen and (max-width: 768px) {
