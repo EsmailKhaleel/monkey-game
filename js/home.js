@@ -38,7 +38,6 @@ playButton.onclick = function (event) {
             user.score = 0; // Default score for new users
             localStorage.setItem('user', JSON.stringify(user));
             welcome.innerHTML = `Welcome, ${user.name}`;
-            userLastScore.innerText = `This is your first time playing.\n Good luck!`;
         }
         welcomeDiv.style.display = 'flex';
     }

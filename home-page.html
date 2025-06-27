@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,12 +10,16 @@
     <link rel="stylesheet" href="style.css">
     <script defer src="./js/home.js"></script>
 </head>
+
 <body>
     <div class="centeredDiv startPage">
         <img src="images/logo.png" alt="" id="monkey-face"><br>
-        <input type="text" id="userName" placeholder="Enter Your Name"><span id="errorUserName">PLEASE ENTER YOUR NAME!</span><br>
-        <button id="playButton" class="playStartBtn">Play</button>
-        <button id="howtoplay" class="playStartBtn">How to play</button>
+        <input type="text" id="userName" placeholder="Enter Your Name"><span id="errorUserName">PLEASE ENTER YOUR
+            NAME!</span><br>
+        <div class="actions">
+            <button id="howtoplay" class="playStartBtn">Guide</button>
+            <button id="playButton" class="playStartBtn">Play</button>
+        </div>
     </div>
     <!-- Welcome The User -->
     <div class="centeredDiv welcomeDiv">
@@ -23,6 +28,8 @@
         <img src="images/logo.png" alt="" id="monkey-face">
         <button id="startButton" class="playStartBtn">Start</button>
     </div>
+
     <audio src="./sounds/game_intro.wav" id="game_intro" autoplay></audio>
 </body>
+
 </html>

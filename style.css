@@ -15,6 +15,7 @@ body {
     height: 100vh;
     margin: 0;
     user-select: none;
+    overflow: hidden;
 }
 /* LOGO */
 #logo-page{
@@ -28,7 +29,7 @@ body {
     color: white;
 }
 #logo{
-    width: 400px;
+    width: z;
     height: 500px;
     margin: 15px;
     opacity: 1;
@@ -100,8 +101,7 @@ body {
     transform: scale(1.03);
 }
 input[type=text] {
-    height: 8vh;
-    width: 25vw;
+    width: 100%;
     border-radius: 20px;
     font: bold 2rem 'Luckiest Guy';
     padding: 10px 20px;
@@ -131,9 +131,8 @@ input[type=text] {
             opacity: 0.7;
         }
 .playStartBtn {
-    width: 25vw;
     margin: 10px;
-    padding: 20px 8vw;
+    padding: 2rem 3rem;
     font: bolder 2rem 'Luckiest Guy';
     padding: 10px 40px;
     border-radius: 25px;
@@ -142,6 +141,7 @@ input[type=text] {
     transition: all 0.3s ease;
     border: 2px solid #A3B956;
     box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1);
+    letter-spacing: 2px;
 }
     .playStartBtn:hover{
         color: #333;
@@ -180,8 +180,8 @@ span#errorUserName {
 }
 .banana {
     position: absolute;
-    height: 5vw;
-    width: 5vw;
+    height: 70px;
+    width: 70px;
 }
 .stone {
     height: 30px;
@@ -279,69 +279,89 @@ span#errorUserName {
 .winImg{
     margin: 0 auto;
 }
+.actions{
+    display: flex;
+    gap: 10px;
+}
+.touch-zone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 33.33%;
+  z-index: 999;
+}
 
-
+#left-touch-zone {
+  left: 0;
+}
+#shoot-touch-zone {
+  left: 33.33%;
+}
+#right-touch-zone {
+  left: 66.66%;
+}
+.touch-zone {
+  background-color: rgba(255, 255, 255, 0.02); 
+}
 
 
 /* Responsive */
 @media screen and (max-width: 768px) {
-    /* For Tablets and smaller screens */
     body {
-        font-size: 16px; /* Adjust font size for better readability */
+        font-size: 16px; 
     }
 
     .centeredDiv {
-        width: 90%; /* Reduce width to avoid content being too wide */
-        padding: 20px; /* Adjust padding */
+        width: 90%; 
+        padding: 20px; 
     }
 
     #logo {
-        width: 350px; /* Smaller logo size */
-        height: 450px; /* Adjust height */
-    }
-
-    input[type="text"] {
-        width: 80%; /* Make input fields more responsive */
-        height: 7vh;
+        width: 350px;
+        height: 450px; 
     }
 
     .playStartBtn {
-        width: 60%; /* Make buttons take up more space */
+        width: 60%; 
         padding: 15px;
     }
 
     #monkey-face {
-        width: 40vw; /* Adjust image size */
+        width: 70vw; 
         height: auto;
     }
 
     #welcome {
-        font-size: 2.5rem; /* Reduce font size */
+        font-size: 2.5rem; 
     }
 
     #timer {
-        font-size: 1.5rem; /* Adjust timer font size */
+        font-size: 1.5rem;
     }
 
     .gameContainer {
-        width: 90vw; /* Adjust game container size */
-        height: 70vh; /* Make it more compact */
+        width: 90vw; 
+        height: 70vh; 
     }
 
     .playAgain {
-        width: 40vw; /* Button width */
+        width: 40vw;
     }
 
     #fullscreen-btn {
-        width: 40px; /* Adjust fullscreen button size */
+        width: 40px;
         height: 40px;
+    }
+
+    .banana {
+        width: 50px;
+        height: 50px;
     }
 }
 
 @media screen and (max-width: 550px) {
-    /* For smaller mobile screens */
     body {
-        font-size: 14px; /* Adjust font size for readability */
+        font-size: 14px; 
     }
 
     .centeredDiv {
@@ -350,48 +370,42 @@ span#errorUserName {
     }
 
     #logo {
-        width: 300px; /* Further reduce logo size */
+        width: 300px;
         height: 400px;
     }
 
-    input[type="text"] {
-        width: 90%; /* Maximize input field width */
-        height: 6vh; /* Make the field slightly shorter */
-    }
-
-    .playStartBtn {
-        width: 70%; /* Make button wider */
-        padding: 12px;
-    }
-
-    #monkey-face {
-        width: 50vw; /* Adjust image size further */
-        height: auto;
-    }
-
     #welcome {
-        font-size: 2rem; /* Further reduce font size */
+        font-size: 2rem; 
     }
 
     .gameContainer {
         width: 90vw;
-        height: 60vh; /* Compact the game container */
+        height: 60vh; 
     }
 
     .playAgain {
-        width: 50vw; /* Adjust button width */
+        width: 50vw; 
     }
 
     #fullscreen-btn {
         width: 35px;
         height: 35px;
     }
+
+    .actions{
+        gap: 5px;flex-direction: row;
+        width: 100%;
+    }
+
+    .playStartBtn{
+        font-size: 1.5rem;
+        padding: 0.5rem;
+    }
 }
 
 @media screen and (max-width: 375px) {
-    /* For very small screens (like iPhone SE) */
     body {
-        font-size: 20px; /* Further reduce font size for readability */
+        font-size: 20px; 
     }
 
     .centeredDiv {
@@ -400,12 +414,12 @@ span#errorUserName {
     }
 
     #logo {
-        width: 250px; /* Reduce logo size */
+        width: 250px;
         height: 300px;
     }
 
     input[type="text"] {
-        width: 95%; /* Maximize input field width */
+        width: 95%; 
         height: 5vh;
     }
 
@@ -413,27 +427,17 @@ span#errorUserName {
         font-size: 20px;
     }
 
-    .playStartBtn {
-        width: 80%; /* Make buttons even more responsive */
-        padding: 10px;
-    }
-
-    #monkey-face {
-        width: 60vw; /* Make monkey face larger for small screens */
-        height: auto;
-    }
-
     #welcome {
-        font-size: 1.8rem; /* Further reduce font size */
+        font-size: 1.8rem;
     }
 
     .gameContainer {
         width: 90vw;
-        height: 50vh; /* Adjust container for small screens */
+        height: 50vh; 
     }
 
     .playAgain {
-        width: 60vw; /* Make play again button responsive */
+        width: 60vw;
     }
 
     #fullscreen-btn {
@@ -442,26 +446,25 @@ span#errorUserName {
     }
 }
 
-/* Responsive adjustments for Pop up for small screens */
 @media (max-width: 600px) {
     .swal2-popup {
-        width: 80vw; /* Adjust width on mobile */
+        width: 80vw;
         padding: 20px;
     }
 
     .swal2-title {
-        font-size: 1.5em; /* Make title slightly smaller on mobile */
+        font-size: 1.5em;
     }
 
     .swal2-text {
-        font-size: 1em; /* Adjust text size */
+        font-size: 1em;
     }
 
     .swal2-image {
-        width: 50%; /* Resize image for mobile */
+        width: 50%;
     }
 
     .swal2-confirm, .swal2-cancel {
-        padding: 12px 20px; /* Adjust button size */
+        padding: 12px 20px;
     }
 }
