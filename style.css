@@ -7,17 +7,23 @@
     font-display: swap;
 }
 
+html,
+body {
+    height: 100%;
+    overflow: hidden;
+}
+
 body {
     font-family: 'Luckiest Guy';
     background-image: url("images/bg.jpg");
     background-repeat: no-repeat;
     background-size: cover;
     background-attachment: fixed;
-    height: 100vh;
     margin: 0;
     user-select: none;
     overflow: hidden;
 }
+
 *,
 *::before,
 *::after {
@@ -120,6 +126,8 @@ body {
 }
 
 input[type=text] {
+    -webkit-appearance: none;
+    appearance: none;
     width: 100%;
     font-family: 'Luckiest Guy';
     border-radius: 5px;
@@ -200,6 +208,9 @@ span#errorUserName {
 
 .monkey {
     position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
     height: 80px;
     width: 80px;
 }
@@ -338,7 +349,7 @@ span#errorUserName {
     gap: 10px;
 }
 
-.form-control {
+/* .form-control {
     width: 100%;
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -348,6 +359,25 @@ span#errorUserName {
     color: #555555;
     font-family: 'Luckiest Guy';
     text-align: center;
+    text-align-last: center; 
+} */
+.form-control option {
+    text-align: center;
+}
+
+select.form-control {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    font-family: 'Luckiest Guy';
+    font-size: 16px;
+    color: #555555;
+    text-align: center;
+    text-align-last: center;
 }
 
 /* Responsive */
@@ -395,20 +425,15 @@ span#errorUserName {
     }
 
     .banana {
-        width: 50px;
-        height: 50px;
+        width: 45px;
+        height: 45px;
     }
 
     .monkey {
-        height: 50px;
-        width: 50px;
+        height: 45px;
+        width: 45px;
     }
 
-    .form-control {
-        padding: 10px;
-        font-size: 16px;
-        text-align: center;
-    }
 }
 
 
