@@ -18,7 +18,7 @@ body {
     user-select: none;
     overflow: hidden;
 }
-
+*,
 *::before,
 *::after {
     box-sizing: border-box;
@@ -166,9 +166,6 @@ input[type="text"]::placeholder {
     letter-spacing: 2px;
 }
 
-.playStartBtn:hover {
-    color: #333;
-}
 
 span#errorUserName {
     color: red;
@@ -237,7 +234,7 @@ span#errorUserName {
     text-overflow: ellipsis;
     -webkit-line-clamp: 1;
     display: -webkit-box;
-    -webkit-box-orient: vertical;
+    -webkit-box-orient: horizontal;
     overflow: hidden;
 }
 
@@ -266,7 +263,6 @@ span#errorUserName {
 .playStartBtn:hover {
     background: #9CAF50;
     box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
-    transform: scale(1.05);
     color: #333;
 }
 
@@ -348,7 +344,6 @@ span#errorUserName {
     border-radius: 5px;
     padding: 10px;
     font-size: 16px;
-    color: #333;
     background-color: #fff;
     color: #555555;
     font-family: 'Luckiest Guy';
@@ -408,90 +403,14 @@ span#errorUserName {
         height: 50px;
         width: 50px;
     }
-}
 
-@media screen and (max-width: 550px) {
-    body {
-        font-size: 14px;
-    }
-
-    .centeredDiv {
-        width: 95%;
-        padding: 15px;
-    }
-
-    #logo {
-        width: 300px;
-        height: 400px;
-    }
-
-    #welcome {
-        font-size: 2rem;
-    }
-
-    .gameContainer {
-        width: 90vw;
-        height: 60vh;
-    }
-
-    .playAgain {
-        width: 50vw;
-    }
-
-    #fullscreen-btn {
-        width: 35px;
-        height: 35px;
-    }
-
-    .actions {
-        gap: 5px;
-        width: 100%;
-    }
-
-}
-
-@media screen and (max-width: 375px) {
-    body {
-        font-size: 20px;
-    }
-
-    .centeredDiv {
-        width: 100%;
+    .form-control {
         padding: 10px;
-    }
-
-    #logo {
-        width: 250px;
-        height: 300px;
-    }
-
-    input[type="text"] {
-        width: 95%;
-        height: 5vh;
-    }
-
-    input[type="text"]::placeholder {
-        font-size: 20px;
-    }
-
-    #welcome {
-        font-size: 1.8rem;
-    }
-
-    .gameContainer {
-        width: 90vw;
-        height: 50vh;
-    }
-
-    .playAgain {
-        width: 60vw;
-    }
-
-    #fullscreen-btn {
-        width: 30px;
-        height: 30px;
+        font-size: 16px;
+        text-align: center;
     }
 }
+
 
 @media (max-width: 600px) {
     .swal2-popup {

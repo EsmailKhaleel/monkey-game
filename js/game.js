@@ -54,11 +54,6 @@ const gameSettings = difficultySettings[difficulty];
 
 // display username
 userNameObject.innerHTML = ` ${user.name}`;
-userNameObject.style = `text-overflow: ellipsis;
-    -webkit-line-clamp: 1;
-    display: -webkit-box;
-    -webkit-box-orient: horizontal;
-    overflow: hidden;`;
 
 // Create Monkey 
 function createMonkey() {
