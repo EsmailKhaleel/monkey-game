@@ -43,8 +43,8 @@ function createMonkey() {
     const monkey = document.createElement('img');
     monkey.src = "images/monkey.gif";
     monkey.className = "monkey";
-    monkey.style.top = `${gameContainer.clientHeight - 80}px`; // 80 Is Monkey's Height
-    monkey.style.left = `${(gameContainer.clientWidth / 2 - 80)}px`; // Center Horizontally
+    monkey.style.top = `${gameContainer.clientHeight - (isMobile ? 50 : 80)}px`; // 80 Is Monkey's Height
+    monkey.style.left = `${(gameContainer.clientWidth / 2 - (isMobile ? 50 : 80))}px`; // Center Horizontally
     gameContainer.append(monkey);
     return monkey;
 }
@@ -111,7 +111,6 @@ const createMovingDownObjects = function (array) {
     imagesArray.push(row);
     console.log(imagesArray);
 }
-
 // Create Stone
 function createStone(stonePosition) {
     const stone = document.createElement('img');
@@ -230,7 +229,7 @@ const gameWin = function () {
         text:`YOUR SCORE IS : ${score}`,
         confirmButtonColor: "darkgreen",
         imageUrl: "./images/monkey-win.gif",
-        width: "60vw",
+        width: "85vw",
         color: "orangered",
         background: "repeating-linear-gradient(45deg,#B2C363,#B2C363 10px,#F0E68C 10px, #F0E68C 20px)",
         allowOutsideClick: false,
@@ -265,7 +264,7 @@ const gameOver = function () {
         imageUrl: "./images/sad.gif",
         width: '85vw',
         color: "orangered",
-        background: "repeating-linear-gradient(45deg,rgb(226, 244, 147),rgb(17, 20, 2) 10px ,#F0E68C 10px,rgb(178, 161, 3) 20px)",
+        background: "repeating-linear-gradient(45deg,#B2C363,#B2C363 10px,#F0E68C 10px, #F0E68C 20px)",
         allowOutsideClick: false,
         buttonsStyling: false,
         showCancelButton: true,
@@ -282,7 +281,22 @@ const gameOver = function () {
         }
     });
 }
-
+ Swal.fire({
+        title: "Game Over",
+        confirmButtonText: "Play Again !",
+        imageUrl: "./images/sad.gif",
+        width: '85vw',
+        color: "orangered",
+        background: "repeating-linear-gradient(45deg,rgb(211, 227, 137),rgb(76, 94, 5) 10px,rgb(91, 85, 33) 10px,rgb(147, 138, 57) 20px)",
+        allowOutsideClick: false,
+        buttonsStyling: false,
+        showCancelButton: true,
+        customClass: {
+            confirmButton: 'playAgain',
+            cancelButton: 'playAgain cancel',
+            title: 'swal-title ',
+        }
+    })
 // Reset Game
 const resetGame = function () {
     stopAllIntervals();
@@ -404,4 +418,17 @@ document.addEventListener('touchmove', (event) => {
     }
 }, { passive: true });
 
-
+// Handle touch to shoot
+document.addEventListener('touchend', (event) => {
+    // Check if the touch ended in the shooting area (like bottom center of the screen)
+    const shootArea = gameContainer.clientHeight - 100; // adjust based on where you want to shoot from
+    if (event.changedTouches[0].clientY > shootArea && canShoot) {
+        shootStone(); // shoot the stone
+        canShoot = false;
+        shootIndicator.style.backgroundColor = "red"; // Not ready to shoot
+        setTimeout(() => {
+            canShoot = true;
+            shootIndicator.style.backgroundColor = "green"; // Ready to shoot
+        }, 500);
+    }
+}, { passive: true });
