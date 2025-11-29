@@ -407,6 +407,11 @@ function initializeGame() {
   // Setup resize handler
   setupResizeHandler();
   
+  // Setup touch controls for mobile (after game container is ready)
+  if (gameContainer && isMobile()) {
+    setupTouchControls();
+  }
+  
   // Initialize daily challenges
   initializeDailyChallenges();
   
@@ -1776,6 +1781,11 @@ const startGame = function () {
 let mobileMoveInterval = null;
 let isMovingLeft = false;
 let isMovingRight = false;
+let touchStartX = 0;
+let touchStartY = 0;
+let touchStartTime = 0;
+let isTouchMoving = false;
+let lastTouchX = 0;
 
 function setupMobileControls() {
   const mobileControls = document.getElementById("mobile-controls");
@@ -1796,6 +1806,8 @@ function setupMobileControls() {
   
   // Update on resize
   window.addEventListener('resize', updateMobileControlsVisibility);
+  
+  // Touch controls for game container will be set up after game container is ready
   
   const mobileLeft = document.getElementById("mobile-left");
   const mobileRight = document.getElementById("mobile-right");
@@ -1818,7 +1830,7 @@ function setupMobileControls() {
         }
         
         let currentPosition = monkey.offsetLeft;
-        const moveSpeed = 40 * (settings.controlSensitivity || 1);
+        const moveSpeed = 10 * (settings.controlSensitivity || 1);
         
         if (isMovingLeft && currentPosition > 20) {
           currentPosition -= moveSpeed;
@@ -1895,6 +1907,148 @@ function setupMobileControls() {
       }
     });
   }
+}
+
+// Touch controls for screen movement and shooting
+function setupTouchControls() {
+  if (!gameContainer) {
+    return;
+  }
+  
+  // Prevent default touch behaviors that might interfere
+  gameContainer.addEventListener('touchstart', (e) => {
+    if (isPaused || !monkey) return;
+    
+    const touch = e.touches[0];
+    if (!touch) return;
+    
+    const rect = gameContainer.getBoundingClientRect();
+    touchStartX = touch.clientX - rect.left;
+    touchStartY = touch.clientY - rect.top;
+    touchStartTime = Date.now();
+    lastTouchX = touchStartX;
+    isTouchMoving = false;
+    
+    // Don't prevent default if touching mobile controls or UI elements
+    const target = e.target;
+    if (target.closest('#mobile-controls') || 
+        target.closest('#pause-btn') || 
+        target.closest('#fullscreen-btn') ||
+        target.closest('#timer') ||
+        target.closest('#pause-overlay')) {
+      return;
+    }
+    
+    e.preventDefault();
+    e.stopPropagation();
+  }, { passive: false });
+  
+  gameContainer.addEventListener('touchmove', (e) => {
+    if (isPaused || !monkey) return;
+    
+    const touch = e.touches[0];
+    if (!touch) return;
+    
+    const rect = gameContainer.getBoundingClientRect();
+    const touchX = touch.clientX - rect.left;
+    const touchY = touch.clientY - rect.top;
+    
+    // Don't prevent default if touching mobile controls or UI elements
+    const target = e.target;
+    if (target.closest('#mobile-controls') || 
+        target.closest('#pause-btn') || 
+        target.closest('#fullscreen-btn') ||
+        target.closest('#timer') ||
+        target.closest('#pause-overlay')) {
+      return;
+    }
+    
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Check if this is a movement
+    const deltaX = Math.abs(touchX - touchStartX);
+    const deltaY = Math.abs(touchY - touchStartY);
+    
+    if (deltaX > 5 || deltaY > 5) {
+      isTouchMoving = true;
+      
+      // Move monkey towards touch position (horizontal movement)
+      const monkeyCenterX = monkey.offsetLeft + monkey.clientWidth / 2;
+      const moveSpeed = 10 * (settings.controlSensitivity || 1);
+      
+      if (touchX < monkeyCenterX - 10) {
+        // Move left
+        let newPosition = monkey.offsetLeft - moveSpeed;
+        if (newPosition < 20) newPosition = 20;
+        monkey.style.left = newPosition + "px";
+      } else if (touchX > monkeyCenterX + 10) {
+        // Move right
+        let newPosition = monkey.offsetLeft + moveSpeed;
+        const maxPosition = gameContainer.clientWidth - monkey.clientWidth - 20;
+        if (newPosition > maxPosition) newPosition = maxPosition;
+        monkey.style.left = newPosition + "px";
+      }
+      
+      lastTouchX = touchX;
+    }
+  }, { passive: false });
+  
+  gameContainer.addEventListener('touchend', (e) => {
+    if (isPaused || !monkey) {
+      isTouchMoving = false;
+      return;
+    }
+    
+    // Don't handle if touching mobile controls or UI elements
+    const target = e.target;
+    if (target.closest('#mobile-controls') || 
+        target.closest('#pause-btn') || 
+        target.closest('#fullscreen-btn') ||
+        target.closest('#timer') ||
+        target.closest('#pause-overlay')) {
+      isTouchMoving = false;
+      return;
+    }
+    
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const touchDuration = Date.now() - touchStartTime;
+    const changedTouch = e.changedTouches[0];
+    if (!changedTouch) {
+      isTouchMoving = false;
+      return;
+    }
+    
+    const rect = gameContainer.getBoundingClientRect();
+    const endX = changedTouch.clientX - rect.left;
+    const endY = changedTouch.clientY - rect.top;
+    const deltaX = Math.abs(endX - touchStartX);
+    const deltaY = Math.abs(endY - touchStartY);
+    
+    // If it was a quick tap (not a drag), shoot
+    if (!isTouchMoving && touchDuration < 400 && deltaX < 50 && deltaY < 50) {
+      // Only shoot if touch was in the upper 80% of the game area (not near bottom controls)
+      const shootArea = gameContainer.clientHeight * 0.8;
+      if (endY < shootArea && canShoot) {
+        shootStone();
+        const shootCooldown = activePowerups[POWERUPS.RAPID_FIRE] ? 200 : 500;
+        canShoot = false;
+        if (shootIndicator) shootIndicator.style.backgroundColor = "red";
+        setTimeout(() => {
+          canShoot = true;
+          if (shootIndicator) shootIndicator.style.backgroundColor = "green";
+        }, shootCooldown);
+      }
+    }
+    
+    isTouchMoving = false;
+  }, { passive: false });
+  
+  gameContainer.addEventListener('touchcancel', (e) => {
+    isTouchMoving = false;
+  });
 }
 
 // ==================== PAUSE MENU ====================

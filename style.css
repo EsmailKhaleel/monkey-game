@@ -233,8 +233,11 @@ span#errorUserName {
     display: flex;
     gap: 1.5rem;
     justify-content: space-around;
+    align-items: center;
     color: orangered;
     font: 1000 2rem 'Luckiest Guy';
+    padding: 10px 5px;
+    flex-wrap: wrap;
 }
 
 .stopwatchwrapper {
@@ -442,7 +445,58 @@ select.form-control {
     }
 
     #timer {
+        font-size: 0.75rem;
+        gap: 0.8rem;
+        padding: 8px 3px;
+        justify-content: space-between;
+    }
+    
+    #username {
+        font-size: 0.7rem;
+        max-width: 120px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    #username strong {
+        display: block;
+        font-size: 0.65rem;
+    }
+    
+    .stopwatchwrapper {
+        flex-direction: column;
+        gap: 2px;
+        align-items: center;
+    }
+    
+    #stopwatch {
         font-size: 0.9rem;
+    }
+    
+    #time-requirement {
+        font-size: 0.6rem;
+    }
+    
+    #level-display {
+        font-size: 0.7rem;
+    }
+    
+    #score {
+        font-size: 0.7rem;
+    }
+    
+    #combo-display {
+        font-size: 0.7rem;
+    }
+    
+    #combo-count {
+        font-size: 0.9rem;
+    }
+    
+    #level-progress-bar {
+        width: 90vw;
+        height: 6px;
+        margin: 8px auto;
     }
 
     .gameContainer {
@@ -473,8 +527,8 @@ select.form-control {
     }
 
     .banana {
-        width: 45px;
-        height: 45px;
+        width: 40px;
+        height: 40px;
     }
 
     .monkey {
@@ -547,6 +601,7 @@ select.form-control {
     color: orangered;
     font: 1000 1.5rem 'Luckiest Guy';
     text-shadow: 2px 2px 4px black;
+    white-space: nowrap;
 }
 
 #level-progress-bar {
@@ -588,6 +643,7 @@ select.form-control {
     flex-direction: column;
     align-items: center;
     gap: 5px;
+    white-space: nowrap;
 }
 
 #combo-count {
@@ -765,17 +821,71 @@ select.form-control {
     }
     
     #timer {
-        font-size: 0.8rem;
+        font-size: 0.65rem;
         flex-wrap: wrap;
-        gap: 0.5rem;
+        gap: 0.4rem;
+        padding: 5px 2px;
+        justify-content: space-between;
     }
     
-    #level-display, #combo-display {
-        font-size: 0.9rem;
+    #username {
+        font-size: 0.6rem;
+        max-width: 100px;
+        order: 1;
+        flex: 0 0 auto;
+    }
+    
+    #username strong {
+        font-size: 0.55rem;
+    }
+    
+    .stopwatchwrapper {
+        order: 2;
+        flex: 0 0 auto;
+        gap: 1px;
+    }
+    
+    #stopwatch {
+        font-size: 0.75rem;
+    }
+    
+    #time-requirement {
+        font-size: 0.5rem;
+    }
+    
+    #level-display {
+        font-size: 0.6rem;
+        order: 3;
+        flex: 0 0 auto;
+    }
+    
+    #score {
+        font-size: 0.6rem;
+        order: 4;
+        flex: 0 0 auto;
     }
     
     #lives-display {
-        font-size: 1.2rem;
+        font-size: 1rem;
+        order: 5;
+        flex: 0 0 auto;
+        gap: 3px;
+    }
+    
+    #combo-display {
+        font-size: 0.6rem;
+        order: 6;
+        flex: 0 0 auto;
+    }
+    
+    #combo-count {
+        font-size: 0.75rem;
+    }
+    
+    #level-progress-bar {
+        width: 95vw;
+        height: 5px;
+        margin: 5px auto;
     }
     
     .swal2-popup {
