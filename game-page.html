@@ -15,13 +15,46 @@
         <div id="username">UserName : <strong id="name"> UNKNOWN</strong></div>
         <div class="stopwatchwrapper">
             <div id="stopwatch">00:00</div>
-            <div id="time"><sub>of &nbsp; 2:00 Minutes</sub></div>
+            <div id="time">
+                <sub id="time-requirement">of &nbsp; 30 seconds</sub>
+            </div>
         </div>
+        <div id="level-display">LEVEL: <span id="level-number">1</span></div>
         <div id="score">SCORE : 00</div>
+        <div id="lives-display">
+            <i class="fas fa-heart"></i>
+            <i class="fas fa-heart"></i>
+            <i class="fas fa-heart"></i>
+        </div>
+        <div id="combo-display">
+            <span id="combo-count">0</span>x COMBO
+            <span id="combo-multiplier"></span>
+        </div>
     </section>
-    <div class="gameContainer"></div>
+    <div id="level-progress-bar">
+        <div id="level-progress-fill"></div>
+    </div>
+    <div id="powerup-indicators"></div>
+    <div class="gameContainer" id="gameContainer"></div>
     <div id="shootIndicator"></div>
+    <button id="pause-btn"><i class="fas fa-pause"></i></button>
     <button id="fullscreen-btn"><i class="fas fa-expand"></i></button>
+    <!-- Mobile Controls -->
+    <div id="mobile-controls" class="mobile-only">
+        <button id="mobile-left" class="mobile-btn"><i class="fas fa-arrow-left"></i></button>
+        <button id="mobile-shoot" class="mobile-btn"><i class="fas fa-circle"></i></button>
+        <button id="mobile-right" class="mobile-btn"><i class="fas fa-arrow-right"></i></button>
+    </div>
+    <!-- Pause Overlay -->
+    <div id="pause-overlay" class="hidden">
+        <div id="pause-menu">
+            <h2>PAUSED</h2>
+            <button id="resume-btn" class="pause-menu-btn">Resume</button>
+            <button id="restart-level-btn" class="pause-menu-btn">Restart Level</button>
+            <button id="settings-btn" class="pause-menu-btn">Settings</button>
+            <button id="quit-btn" class="pause-menu-btn">Quit to Home</button>
+        </div>
+    </div>
     <!-- Sounds Files -->
     <audio src="sounds/game_theme.mp3" id="game_theme"></audio>
     <audio src="sounds/game_over.wav" id="game_over"></audio>
