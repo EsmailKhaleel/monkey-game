@@ -132,7 +132,7 @@ input[type=text] {
     font-family: 'Luckiest Guy';
     border-radius: 5px;
     padding: 10px;
-    font-size: 16px;
+    font-size: 20px;
     text-align: center;
     box-sizing: border-box;
     border: 2px solid #B2C363;
@@ -261,18 +261,27 @@ span#errorUserName {
 }
 
 .playAgain {
-    width: 15vw;
-    height: 7vh;
-    padding: 20px 8vw;
+    min-width: 120px;
+    max-width: 200px;
+    width: auto;
+    height: auto;
+    min-height: 44px;
+    padding: 12px 24px;
     font: bold 1rem 'Luckiest Guy';
-    padding: 10px;
     margin: 10px;
-    border-radius: 25px;
+    border-radius: 10px;
     color: white;
     background-color: #79863f;
     transition: all 0.3s ease;
     border: 2px solid rgba(255, 255, 255, 0.588);
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .playAgain:hover,
@@ -350,16 +359,23 @@ span#errorUserName {
 .actions {
     display: flex;
     width: 100%;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
     gap: 10px;
+}
+
+.actions .playStartBtn:not(.start-btn) {
+    width: calc(50% - 5px);
+    flex: 0 0 calc(50% - 5px);
 }
 
 .start-btn {
     width: 100%;
+    flex: 0 0 100%;
     font-size: 20px;
     padding: 15px;
-    background: linear-gradient(135deg, #ff6b6b, #ff8c42);
-    border: 3px solid #ff4757;
+    background: linear-gradient(135deg, #F2A926, #F19726);
+    border: 3px solid #F0452A;
     box-shadow: 0px 6px 20px rgba(255, 71, 87, 0.4);
     font-weight: bold;
     letter-spacing: 3px;
@@ -473,10 +489,6 @@ select.form-control {
         font-size: 0.9rem;
     }
     
-    #time-requirement {
-        font-size: 0.6rem;
-    }
-    
     #level-display {
         font-size: 0.7rem;
     }
@@ -500,12 +512,16 @@ select.form-control {
     }
 
     .gameContainer {
-        width: 90vw;
-        height: 70vh;
+        width: 98vw;
+        height: 85vh;
     }
 
     .playAgain {
-        width: 40vw;
+        min-width: 100px;
+        max-width: 180px;
+        width: auto;
+        padding: 10px 20px;
+        font-size: 0.9rem;
     }
     
     .menu-btn {
@@ -540,6 +556,22 @@ select.form-control {
 
 
 @media (max-width: 600px) {
+    .playStartBtn {
+        font-size: 10px;
+        padding: 8px;
+    }
+    .start-btn {
+        font-size: 16px;
+    }
+    input[type=text] {
+        font-size: 16px;
+    }
+    #shootIndicator{
+        width: 10px;
+        height: 10px;
+        top: 0;
+        right: 0;
+    }
     .swal2-popup {
         width: 95vw !important;
         padding: 15px !important;
@@ -572,12 +604,25 @@ select.form-control {
     }
     
     .swal2-actions {
-        flex-direction: column;
+        flex-direction: row !important;
         gap: 10px;
+        justify-content: center;
     }
     
     .swal2-actions button {
-        width: 100% !important;
+        width: auto !important;
+        flex: 1 1 auto;
+        min-width: 80px;
+        max-width: 45%;
+    }
+    
+    /* Ensure playAgain buttons in alerts don't overflow */
+    .swal2-popup .playAgain,
+    .swal2-actions .playAgain {
+        max-width: 45% !important;
+        width: auto !important;
+        min-width: 80px !important;
+        box-sizing: border-box !important;
     }
     
     .swal2-toast {
@@ -640,7 +685,7 @@ select.form-control {
     font: bold 1.2rem 'Luckiest Guy';
     text-shadow: 2px 2px 4px black;
     display: flex;
-    flex-direction: column;
+    /* flex-direction: column; */
     align-items: center;
     gap: 5px;
     white-space: nowrap;
@@ -654,7 +699,7 @@ select.form-control {
 
 #combo-multiplier {
     color: #ff6b6b;
-    font-size: 1rem;
+    font-size: 0.7rem;
 }
 
 /* ==================== POWER-UP INDICATORS ==================== */
@@ -694,9 +739,9 @@ select.form-control {
 
 /* ==================== PAUSE MENU ==================== */
 #pause-btn {
-    position: absolute;
-    top: 10px;
-    left: 10px;
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
     background-color: rgba(192, 190, 190, 0.208);
     border: 1px solid white;
     border-radius: 50%;
@@ -776,7 +821,7 @@ select.form-control {
 /* ==================== MOBILE CONTROLS ==================== */
 #mobile-controls {
     position: fixed;
-    bottom: 20px;
+    bottom: 0;
     left: 50%;
     transform: translateX(-50%);
     display: none;
@@ -785,13 +830,13 @@ select.form-control {
 }
 
 .mobile-btn {
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     background: rgba(178, 195, 99, 0.8);
     border: 3px solid white;
     color: white;
-    font-size: 1.5rem;
+    font-size: 1rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -849,10 +894,6 @@ select.form-control {
         font-size: 0.75rem;
     }
     
-    #time-requirement {
-        font-size: 0.5rem;
-    }
-    
     #level-display {
         font-size: 0.6rem;
         order: 3;
@@ -874,6 +915,7 @@ select.form-control {
     
     #combo-display {
         font-size: 0.6rem;
+        gap: 2px;
         order: 6;
         flex: 0 0 auto;
     }
@@ -903,9 +945,22 @@ select.form-control {
     }
     
     .playAgain {
-        width: 80vw !important;
-        padding: 12px !important;
-        font-size: 0.9rem !important;
+        min-width: 80px !important;
+        max-width: 90vw !important;
+        width: auto !important;
+        padding: 10px 16px !important;
+        font-size: 0.85rem !important;
+        margin: 8px !important;
+    }
+    
+    /* Ensure playAgain buttons in alerts on small screens */
+    .swal2-popup .playAgain,
+    .swal2-actions .playAgain {
+        max-width: calc(100% - 16px) !important;
+        width: auto !important;
+        min-width: 70px !important;
+        padding: 8px 14px !important;
+        font-size: 0.8rem !important;
     }
 }
 
@@ -941,6 +996,19 @@ select.form-control {
     pointer-events: none;
     z-index: 1000;
     transition: all 0.5s ease-out;
+}
+
+.powerup-popup {
+    position: absolute;
+    color: #9b59b6;
+    font-family: 'Luckiest Guy';
+    font-size: 1.3rem;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px black, 0 0 15px #9b59b6;
+    pointer-events: none;
+    z-index: 1001;
+    transition: all 0.6s ease-out;
+    white-space: nowrap;
 }
 
 /* ==================== SCREEN SHAKE ==================== */
@@ -979,4 +1047,23 @@ select.form-control {
 @keyframes powerupPulse {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.1); }
+}
+
+@keyframes magnetPulse {
+    0%, 100% { 
+        filter: drop-shadow(0 0 15px #ff6b6b) drop-shadow(0 0 25px #ff6b6b);
+    }
+    50% { 
+        filter: drop-shadow(0 0 20px #ff6b6b) drop-shadow(0 0 35px #ff6b6b) drop-shadow(0 0 45px #ff6b6b);
+    }
+}
+
+@media screen and (max-width: 600px) {
+    #pause-btn {
+        bottom: 0;
+        right: 0;
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+    }
 }

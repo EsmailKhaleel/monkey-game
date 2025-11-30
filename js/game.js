@@ -18,10 +18,8 @@ const levelConfig = {
   getLevelRequirement: function(level) {
     const isBoss = this.bossLevels.includes(level);
     const baseScore = 20 + (level * 15);
-    const baseTime = 30 + (level * 5);
     return {
-      score: isBoss ? Math.floor(baseScore * 1.5) : baseScore,
-      time: isBoss ? Math.floor(baseTime * 1.5) : baseTime
+      score: isBoss ? Math.floor(baseScore * 1.5) : baseScore
     };
   },
   isBossLevel: function(level) {
@@ -38,6 +36,17 @@ const POWERUPS = {
   SHIELD: 'shield',
   MAGNET: 'magnet',
   EXTRA_LIFE: 'extraLife'
+};
+
+// Power-up display names
+const POWERUP_NAMES = {
+  [POWERUPS.MULTI_SHOT]: 'Multi Shot',
+  [POWERUPS.RAPID_FIRE]: 'Rapid Fire',
+  [POWERUPS.SLOW_MOTION]: 'Slow Motion',
+  [POWERUPS.SCORE_MULTIPLIER]: 'Score x2',
+  [POWERUPS.SHIELD]: 'Shield',
+  [POWERUPS.MAGNET]: 'Magnet',
+  [POWERUPS.EXTRA_LIFE]: 'Extra Life'
 };
 
 // Achievement Definitions
@@ -113,7 +122,6 @@ const levelProgressBar = document.getElementById("level-progress-fill");
 const powerupIndicators = document.getElementById("powerup-indicators");
 const pauseOverlay = document.getElementById("pause-overlay");
 const pauseBtn = document.getElementById("pause-btn");
-const timeRequirement = document.getElementById("time-requirement");
 
 // Game State
 let canShoot = true;
@@ -399,7 +407,6 @@ function initializeGame() {
   updateLivesDisplay();
   updateComboDisplay();
   updateLevelProgress();
-  updateTimeRequirement();
   
   // Apply settings (now that they're loaded)
   applySettings();
@@ -490,24 +497,21 @@ function getLevelSettings() {
   return {
     fruitSpeed: Math.max(500, baseSettings.fruitSpeed / levelMultiplier),
     spawnInterval: Math.max(1000, baseSettings.spawnInterval / spawnMultiplier),
-    bombFrequency: isBoss ? 0.3 : 0.1,
+    bombFrequency: isBoss ? 0.4 : 0.2, // Increased from 0.3/0.1 to 0.4/0.2 for more regular bombs
     goldenFrequency: 0.15 + (level * 0.01),
-    powerupFrequency: 0.05,
+    powerupFrequency: 0.12, // Increased from 0.05 to 0.12 (12%) to make power-ups more common
     isBoss: isBoss
   };
 }
 
 function checkLevelCompletion() {
   const requirement = levelConfig.getLevelRequirement(levelConfig.currentLevel);
-  const elapsedTime = (minutes * 60) + seconds - levelConfig.levelStartTime;
   
   const scoreProgress = Math.min(100, (levelScore / requirement.score) * 100);
-  const timeProgress = Math.min(100, (elapsedTime / requirement.time) * 100);
-  const totalProgress = (scoreProgress + timeProgress) / 2;
   
-  updateLevelProgress(totalProgress);
+  updateLevelProgress(scoreProgress);
   
-  if (levelScore >= requirement.score && elapsedTime >= requirement.time) {
+  if (levelScore >= requirement.score) {
     completeLevel();
   }
 }
@@ -571,7 +575,6 @@ function nextLevel() {
   
   if (levelDisplay) levelDisplay.textContent = levelConfig.currentLevel;
   updateLevelProgress(0);
-  updateTimeRequirement();
   
   showLevelIntro();
 }
@@ -587,7 +590,6 @@ function showLevelIntro() {
       <div style="text-align: center; font-size: ${mobile ? '0.9rem' : '1rem'};">
         <p style="margin: ${mobile ? '5px 0' : '10px 0'}"><strong>Requirements:</strong></p>
         <p style="margin: ${mobile ? '5px 0' : '10px 0'}">Score: ${requirement.score} points</p>
-        <p style="margin: ${mobile ? '5px 0' : '10px 0'}">Survive: ${requirement.time} seconds</p>
         ${isBoss ? `<p style="color: red; font-weight: bold; margin: ${mobile ? '5px 0' : '10px 0'}; font-size: ${mobile ? '0.9rem' : '1rem'};">BOSS LEVEL - EXTREME DIFFICULTY!</p>` : ''}
       </div>
     `,
@@ -609,23 +611,9 @@ function startLevel() {
   levelConfig.levelStartTime = (minutes * 60) + seconds;
   lives = 3;
   updateLivesDisplay();
-  updateTimeRequirement();
   startGame();
 }
 
-function updateTimeRequirement() {
-  if (timeRequirement) {
-    const requirement = levelConfig.getLevelRequirement(levelConfig.currentLevel);
-    const minutesReq = Math.floor(requirement.time / 60);
-    const secondsReq = requirement.time % 60;
-    
-    if (minutesReq > 0) {
-      timeRequirement.textContent = `of ${minutesReq}:${secondsReq < 10 ? '0' : ''}${secondsReq} Minutes`;
-    } else {
-      timeRequirement.textContent = `of ${requirement.time} seconds`;
-    }
-  }
-}
 
 function updateLevelProgress(percent) {
   if (levelProgressBar) {
@@ -738,7 +726,8 @@ function updateComboDisplay() {
 
 // ==================== POWER-UP SYSTEM ====================
 let powerupUpdateInterval = null;
-let magnetAttractionDistance = 150; // pixels
+let magnetAttractionDistance = 200; // pixels - increased for better range
+let magnetAnimationFrame = null;
 
 function activatePowerup(type) {
   activePowerups[type] = {
@@ -779,6 +768,15 @@ function activatePowerup(type) {
     case POWERUPS.MAGNET:
       // Start magnet effect
       startMagnetEffect();
+      // Add visual indicator on monkey
+      if (monkey) {
+        monkey.style.filter = 'drop-shadow(0 0 15px #ff6b6b) drop-shadow(0 0 25px #ff6b6b)';
+        monkey.style.animation = 'magnetPulse 1s ease-in-out infinite';
+      }
+      // Start continuous magnet effect loop
+      if (!magnetAnimationFrame) {
+        magnetAnimationFrame = requestAnimationFrame(applyMagnetEffect);
+      }
       break;
     case POWERUPS.SHIELD:
       // Visual indicator added in updatePowerupIndicators
@@ -808,6 +806,16 @@ function deactivatePowerup(type) {
     case POWERUPS.MAGNET:
       // Stop magnet effect
       stopMagnetEffect();
+      // Remove visual indicator
+      if (monkey) {
+        monkey.style.filter = '';
+        monkey.style.animation = '';
+      }
+      // Stop magnet animation loop
+      if (magnetAnimationFrame) {
+        cancelAnimationFrame(magnetAnimationFrame);
+        magnetAnimationFrame = null;
+      }
       break;
     case POWERUPS.SHIELD:
       if (monkey) {
@@ -852,11 +860,66 @@ function restoreNormalSpeed() {
 }
 
 function startMagnetEffect() {
-  // Magnet effect applied in moveFruitDown
+  // Magnet effect applied via requestAnimationFrame
 }
 
 function stopMagnetEffect() {
-  // Cleanup handled automatically
+  // Cleanup handled in deactivatePowerup
+}
+
+// Apply magnet effect continuously using requestAnimationFrame
+function applyMagnetEffect() {
+  if (!activePowerups[POWERUPS.MAGNET] || !monkey || !gameContainer) {
+    magnetAnimationFrame = null;
+    return;
+  }
+  
+  const monkeyRect = monkey.getBoundingClientRect();
+  const containerRect = gameContainer.getBoundingClientRect();
+  const monkeyCenterX = monkeyRect.left + monkeyRect.width / 2;
+  const monkeyCenterY = monkeyRect.top + monkeyRect.height / 2;
+  const autoCollectDistance = 40; // Auto-collect fruits within this distance
+  
+  // Apply magnet to all fruits in the game
+  imagesArray.forEach((row, i) => {
+    if (!row) return;
+    row.forEach((fruit, j) => {
+      if (!fruit || !fruit.parentNode || fruit.src.includes("bomb")) return;
+      
+      const fruitRect = fruit.getBoundingClientRect();
+      const fruitCenterX = fruitRect.left + fruitRect.width / 2;
+      const fruitCenterY = fruitRect.top + fruitRect.height / 2;
+      
+      // Calculate distance
+      const distanceX = fruitCenterX - monkeyCenterX;
+      const distanceY = fruitCenterY - monkeyCenterY;
+      const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+      
+      // Auto-collect fruits that get very close to monkey
+      // This is handled in the movement interval to avoid conflicts
+      // Just ensure they're being pulled accurately here
+      
+      if (distance < magnetAttractionDistance && distance > autoCollectDistance) {
+        // Calculate attraction strength (stronger when closer)
+        const attraction = Math.max(0.5, (magnetAttractionDistance - distance) / magnetAttractionDistance);
+        
+        // Calculate movement directly toward monkey center (more accurate)
+        const moveX = -distanceX * attraction * 0.25; // Increased pull strength
+        const moveY = -distanceY * attraction * 0.2; // Increased pull strength
+        
+        // Get current position relative to container
+        const currentLeftPx = fruitRect.left - containerRect.left;
+        const currentTopPx = fruitRect.top - containerRect.top;
+        
+        // Apply movement
+        fruit.style.left = (currentLeftPx + moveX) + "px";
+        fruit.style.top = (currentTopPx + moveY) + "px";
+      }
+    });
+  });
+  
+  // Continue animation loop
+  magnetAnimationFrame = requestAnimationFrame(applyMagnetEffect);
 }
 
 function getPowerupDuration(type) {
@@ -1178,29 +1241,61 @@ const moveFruitDown = function (fruitObject) {
     baseSpeed = parseInt(fruitObject.dataset.originalSpeed);
   }
   const speed = activePowerups[POWERUPS.SLOW_MOTION] ? baseSpeed * 2 : baseSpeed;
+  // Reduce vertical spacing between rows on mobile
+  const verticalStep = isMobile() ? 60 : 100;
   
   const moveDownInterval = setInterval(function () {
     if (isPaused) return;
     
-    // Apply magnet effect if active
-    if (activePowerups[POWERUPS.MAGNET] && monkey && !fruitObject.src.includes("bomb")) {
-      const fruitRect = fruitObject.getBoundingClientRect();
-      const monkeyRect = monkey.getBoundingClientRect();
-      const fruitCenterX = fruitRect.left + fruitRect.width / 2;
-      const monkeyCenterX = monkeyRect.left + monkeyRect.width / 2;
-      const distance = Math.abs(fruitCenterX - monkeyCenterX);
-      
-      if (distance < magnetAttractionDistance) {
-        const attraction = (magnetAttractionDistance - distance) / magnetAttractionDistance;
-        const moveX = (monkeyCenterX - fruitCenterX) * attraction * 0.1;
-        const currentLeft = parseFloat(fruitObject.style.left) || 0;
-        fruitObject.style.left = (currentLeft + moveX) + "px";
-      }
-    }
+    // Magnet effect is now handled by requestAnimationFrame in applyMagnetEffect()
+    // This keeps it running smoothly at 60fps instead of only when the movement interval fires
     
-    topPosition += 100;
+    topPosition += verticalStep;
     fruitObject.style.top = topPosition + "px";
     
+    // Check if fruit is close to monkey (for collision or magnet collection)
+    const fruitRect = fruitObject.getBoundingClientRect();
+    const monkeyRect = monkey.getBoundingClientRect();
+    const fruitCenterX = fruitRect.left + fruitRect.width / 2;
+    const monkeyCenterX = monkeyRect.left + monkeyRect.width / 2;
+    const fruitCenterY = fruitRect.top + fruitRect.height / 2;
+    const monkeyCenterY = monkeyRect.top + monkeyRect.height / 2;
+    const distanceX = fruitCenterX - monkeyCenterX;
+    const distanceY = fruitCenterY - monkeyCenterY;
+    const distanceToMonkey = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+    
+    // If magnet is active and fruit is very close, auto-collect it (before normal collision)
+    if (activePowerups[POWERUPS.MAGNET] && distanceToMonkey < 60 && !fruitObject.src.includes("bomb")) {
+      clearInterval(moveDownInterval);
+      const index = fruitIntervals.indexOf(moveDownInterval);
+      if (index > -1) {
+        fruitIntervals.splice(index, 1);
+      }
+      
+      // Find fruit in imagesArray to handle collection properly
+      let foundI = -1, foundJ = -1;
+      imagesArray.forEach((row, i) => {
+        if (row) {
+          row.forEach((fruit, j) => {
+            if (fruit === fruitObject) {
+              foundI = i;
+              foundJ = j;
+            }
+          });
+        }
+      });
+      
+      if (foundI >= 0 && foundJ >= 0) {
+        const x = fruitRect.left + fruitRect.width / 2;
+        const y = fruitRect.top + fruitRect.height / 2;
+        handleCollision(fruitObject, foundI, foundJ);
+      } else {
+        fruitObject.remove();
+      }
+      return;
+    }
+    
+    // Normal collision detection (fruit hits monkey)
     if (
       fruitObject.offsetTop >=
       monkey.offsetTop - fruitObject.clientHeight + 15
@@ -1211,6 +1306,33 @@ const moveFruitDown = function (fruitObject) {
       if (index > -1) {
         fruitIntervals.splice(index, 1);
       }
+      
+      // If magnet is active and it's not a bomb, auto-collect instead of causing damage
+      if (activePowerups[POWERUPS.MAGNET] && !fruitObject.src.includes("bomb")) {
+        // Find fruit in imagesArray to handle collection properly
+        let foundI = -1, foundJ = -1;
+        imagesArray.forEach((row, i) => {
+          if (row) {
+            row.forEach((fruit, j) => {
+              if (fruit === fruitObject) {
+                foundI = i;
+                foundJ = j;
+              }
+            });
+          }
+        });
+        
+        if (foundI >= 0 && foundJ >= 0) {
+          const x = fruitRect.left + fruitRect.width / 2;
+          const y = fruitRect.top + fruitRect.height / 2;
+          handleCollision(fruitObject, foundI, foundJ);
+        } else {
+          fruitObject.remove();
+        }
+        return;
+      }
+      
+      // Normal collision - fruit hits monkey (magnet not active or it's a bomb)
       fruitObject.remove();
       resetCombo();
       
@@ -1240,14 +1362,27 @@ const createMovingDownObjects = function (array) {
   if (isPaused) return;
   
   const row = [];
-  let leftPosition = 5;
   let totalFruits = isMobile() ? 6 : 9;
-  let spacing = isMobile() ? 12 : 8;
   const levelSettings = getLevelSettings();
+  
+  // Calculate proper spacing to evenly distribute fruits across container width
+  let spacing, leftPosition;
+  if (isMobile()) {
+    // For mobile: calculate spacing based on container width for even distribution
+    const containerWidth = gameContainer ? gameContainer.clientWidth : window.innerWidth * 0.98;
+    const fruitWidth = 40; // Mobile fruit width in pixels
+    const totalWidth = containerWidth - (fruitWidth * totalFruits);
+    const gapBetweenFruits = totalWidth / (totalFruits + 1);
+    spacing = gapBetweenFruits + fruitWidth;
+    leftPosition = gapBetweenFruits;
+  } else {
+    leftPosition = 5;
+    spacing = 8;
+  }
   
   // Create fruit array with probabilities
   let fruitArray = [];
-  const poisonFrequency = levelSettings.bombFrequency * 0.3; // 30% of bomb frequency
+  const poisonFrequency = levelSettings.bombFrequency * 0.2; // 20% of bomb frequency (reduced from 30% to have more regular bombs)
   const bonusFrequency = levelSettings.goldenFrequency * 0.4; // 40% of golden frequency
   
   for (let i = 0; i < totalFruits; i++) {
@@ -1271,7 +1406,12 @@ const createMovingDownObjects = function (array) {
       const powerupTypes = [POWERUPS.MULTI_SHOT, POWERUPS.RAPID_FIRE, POWERUPS.SLOW_MOTION, 
                            POWERUPS.SCORE_MULTIPLIER, POWERUPS.SHIELD, POWERUPS.MAGNET, POWERUPS.EXTRA_LIFE];
       const powerupType = powerupTypes[Math.floor(Math.random() * powerupTypes.length)];
-      const powerupFruit = createPowerupFruit(powerupType, leftPosition);
+      const powerupFruit = createPowerupFruit(powerupType, isMobile() ? leftPosition : leftPosition);
+      if (isMobile()) {
+        powerupFruit.style.left = leftPosition + "px";
+      } else {
+        powerupFruit.style.left = leftPosition + "vw";
+      }
       gameContainer.append(powerupFruit);
       row.push(powerupFruit);
       moveFruitDown(powerupFruit);
@@ -1297,6 +1437,10 @@ const createMovingDownObjects = function (array) {
       }
       
       const fruitObject = createFruitObject(fruitSrc, leftPosition);
+      // Use pixels for mobile to ensure proper alignment, vw for desktop
+      if (isMobile()) {
+        fruitObject.style.left = leftPosition + "px";
+      }
       if (fruitType) {
         fruitObject.dataset.fruitType = fruitType;
         if (fruitType === 'poison') {
@@ -1318,7 +1462,10 @@ function createPowerupFruit(type, leftPosition) {
   const powerupFruit = document.createElement("img");
   powerupFruit.src = "images/golden.png"; // Use golden as base
   powerupFruit.classList.add("banana", "powerup");
-  powerupFruit.style.left = leftPosition + "vw";
+  // Position will be set by caller for mobile (pixels) or use vw for desktop
+  if (!isMobile()) {
+    powerupFruit.style.left = leftPosition + "vw";
+  }
   powerupFruit.dataset.powerup = type;
   powerupFruit.style.filter = "hue-rotate(180deg)";
   return powerupFruit;
@@ -1452,39 +1599,56 @@ const handleCollision = function (imgObj, i, j) {
     
     checkLevelCompletion();
   } else if (imgObj.src.includes("golden.png")) {
-    imgObj.remove();
-    imagesArray[i][j] = null;
-    
-    // Check if it's a bonus fruit
-    const isBonus = imgObj.dataset.fruitType === 'bonus';
-    
-    if (!isBonus) {
-      statistics.totalGolden++;
+    // Check if it's a power-up first (power-ups use golden.png as base)
+    if (imgObj.dataset.powerup) {
+      // Handle power-up collection
+      const powerupType = imgObj.dataset.powerup;
+      if (powerupType === POWERUPS.EXTRA_LIFE) {
+        lives = Math.min(3, lives + 1);
+        updateLivesDisplay();
+      } else {
+        activatePowerup(powerupType);
+      }
+      imgObj.remove();
+      imagesArray[i][j] = null;
+      createParticleEffect(x, y, 'hit');
+      createPowerupPopup(x, y, powerupType); // Show power-up name
+    } else {
+      // Regular golden fruit or bonus fruit
+      imgObj.remove();
+      imagesArray[i][j] = null;
+      
+      // Check if it's a bonus fruit
+      const isBonus = imgObj.dataset.fruitType === 'bonus';
+      
+      if (!isBonus) {
+        statistics.totalGolden++;
+      }
+      statistics.totalHits++;
+      if (combo > statistics.bestCombo) {
+        statistics.bestCombo = combo;
+      }
+      setLocalStorage("statistics", statistics);
+      
+      let points = isBonus ? 5 : 2; // Bonus fruits worth more
+      if (activePowerups[POWERUPS.SCORE_MULTIPLIER]) points *= 2;
+      points = Math.floor(points * comboMultiplierValue);
+      
+      levelScore += points;
+      score += points;
+      statistics.totalScore += points;
+      
+      incrementCombo();
+      trackScore(score);
+      createParticleEffect(x, y, isBonus ? 'powerup' : 'hit');
+      createScorePopup(x, y, points);
+      
+      if (sounds.golden) {
+        sounds.golden.volume = settings.soundVolume || 1;
+        sounds.golden.play().catch(() => {});
+      }
+      checkLevelCompletion();
     }
-    statistics.totalHits++;
-    if (combo > statistics.bestCombo) {
-      statistics.bestCombo = combo;
-    }
-    setLocalStorage("statistics", statistics);
-    
-    let points = isBonus ? 5 : 2; // Bonus fruits worth more
-    if (activePowerups[POWERUPS.SCORE_MULTIPLIER]) points *= 2;
-    points = Math.floor(points * comboMultiplierValue);
-    
-    levelScore += points;
-    score += points;
-    statistics.totalScore += points;
-    
-    incrementCombo();
-    trackScore(score);
-    createParticleEffect(x, y, isBonus ? 'powerup' : 'hit');
-    createScorePopup(x, y, points);
-    
-    if (sounds.golden) {
-      sounds.golden.volume = settings.soundVolume || 1;
-      sounds.golden.play().catch(() => {});
-    }
-    checkLevelCompletion();
   } else if (imgObj.src.includes("bomb.gif")) {
     const isPoison = imgObj.dataset.fruitType === 'poison';
     
@@ -1513,22 +1677,17 @@ const handleCollision = function (imgObj, i, j) {
       screenShake();
       createParticleEffect(x, y, 'explosion');
       
+      // If no more lives, decrease score by 2
       if (lives <= 0) {
+        const pointsLost = 2;
+        levelScore = Math.max(0, levelScore - pointsLost);
+        score = Math.max(0, score - pointsLost);
+        statistics.totalScore = Math.max(0, statistics.totalScore - pointsLost);
+        trackScore(score);
+        createScorePopup(x, y, -pointsLost);
         gameOver();
       }
     }
-  } else if (imgObj.src.includes("powerup")) {
-    // Handle power-up collection
-    const powerupType = imgObj.dataset.powerup;
-    if (powerupType === POWERUPS.EXTRA_LIFE) {
-      lives = Math.min(3, lives + 1);
-      updateLivesDisplay();
-    } else {
-      activatePowerup(powerupType);
-    }
-    imgObj.remove();
-    imagesArray[i][j] = null;
-    createParticleEffect(x, y, 'hit');
   }
 };
 
@@ -1544,6 +1703,21 @@ function createScorePopup(x, y, points) {
     popup.style.opacity = '0';
     popup.style.transform = 'translateY(-30px)';
     setTimeout(() => popup.remove(), 500);
+  }, 100);
+}
+
+function createPowerupPopup(x, y, powerupType) {
+  const popup = document.createElement('div');
+  popup.className = 'powerup-popup';
+  popup.textContent = POWERUP_NAMES[powerupType] || 'Power-Up';
+  popup.style.left = x + 'px';
+  popup.style.top = y + 'px';
+  gameContainer.appendChild(popup);
+  
+  setTimeout(() => {
+    popup.style.opacity = '0';
+    popup.style.transform = 'translateY(-40px) scale(1.2)';
+    setTimeout(() => popup.remove(), 600);
   }, 100);
 }
 
@@ -1729,6 +1903,10 @@ const stopAllIntervals = function () {
   if (powerupUpdateInterval) {
     clearInterval(powerupUpdateInterval);
     powerupUpdateInterval = null;
+  }
+  if (magnetAnimationFrame) {
+    cancelAnimationFrame(magnetAnimationFrame);
+    magnetAnimationFrame = null;
   }
   stopComboDecayTimer();
   if (mobileMoveInterval) {
